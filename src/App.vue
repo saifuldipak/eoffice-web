@@ -12,12 +12,6 @@
         <button class="btn-add" @click="showAddUserForm = true">
           <i class="fas fa-plus"></i> Add
         </button>
-        <button class="btn-modify">
-          <i class="fas fa-edit"></i> Modify
-        </button>
-        <button class="btn-delete">
-          <i class="fas fa-trash"></i> Delete
-        </button>
         <button class="btn-logout" @click="handleLogout">
           <i class="fas fa-sign-out-alt"></i> Logout
         </button>
