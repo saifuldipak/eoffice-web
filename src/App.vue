@@ -32,6 +32,10 @@
             <th>Username</th>
             <th>Email</th>
             <th>Full Name</th>
+            <th>Role</th>
+            <th>Active</th>
+            <th>Created At</th>
+            <th>Updated At</th>
             <th>Action</th> <!-- Added Action column -->
           </tr>
         </thead>
@@ -40,6 +44,10 @@
             <td>{{ user.username }}</td>
             <td>{{ user.email }}</td>
             <td>{{ user.first_name }} {{ user.last_name }}</td>
+            <td>{{ user.role }}</td>
+            <td>{{ user.is_active ? 'Yes' : 'No' }}</td>
+            <td>{{ new Date(user.created_at).toLocaleString() }}</td>
+            <td>{{ new Date(user.updated_at).toLocaleString() }}</td>
             <td>
               <i class="fas fa-edit" @click="editUser(user)"></i>
               <i class="fas fa-trash" @click="deleteUser(user)"></i>
