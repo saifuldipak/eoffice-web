@@ -1,62 +1,63 @@
 <template>
-  
-    <LoginForm v-if="!isAuthenticated" />
-    <div v-else>
-      <div class="toolbar">
-        <div class="toolbar-left">
-          <span>Users</span>
-        </div>
-        <div class="toolbar-center">
-          <input type="text" placeholder="Search..." class="search-input" v-model="searchQuery" @keyup.enter="handleSearch" />
-        </div>
-        <div class="toolbar-right">
-          <button class="btn-add">
-            <i class="fas fa-plus"></i> Add
-          </button>
-          <button class="btn-modify">
-            <i class="fas fa-edit"></i> Modify
-          </button>
-          <button class="btn-delete">
-            <i class="fas fa-trash"></i> Delete
-          </button>
-          <button class="btn-logout" @click="handleLogout">
-            <i class="fas fa-sign-out-alt"></i> Logout
-          </button>
-        </div>
+  <LoginForm v-if="!isAuthenticated" />
+  <div v-else>
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <span>Users</span>
       </div>
-      <div class="search-results" v-if="searchResult">
-        <table>
-          <thead>
-            <tr>
-              <th>Username</th>
-              <th>Email</th>
-              <th>Full Name</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>{{ searchResult.username }}</td>
-              <td>{{ searchResult.email }}</td>
-              <td>{{ searchResult.first_name }} {{ searchResult.last_name }}</td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="toolbar-center">
+        <input type="text" placeholder="Search..." class="search-input" v-model="searchQuery" @keyup.enter="handleSearch" />
       </div>
-      <div class="no-results" v-else-if="noResults">
-        No results found.
+      <div class="toolbar-right">
+        <button class="btn-add" @click="showAddUserForm = true">
+          <i class="fas fa-plus"></i> Add
+        </button>
+        <button class="btn-modify">
+          <i class="fas fa-edit"></i> Modify
+        </button>
+        <button class="btn-delete">
+          <i class="fas fa-trash"></i> Delete
+        </button>
+        <button class="btn-logout" @click="handleLogout">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
       </div>
     </div>
-
+    <AddUserForm v-if="showAddUserForm" @close="showAddUserForm = false" />
+    <div class="search-results" v-if="searchResults.length > 0">
+      <table>
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Full Name</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="user in searchResults" :key="user.id">
+            <td>{{ user.username }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.first_name }} {{ user.last_name }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="no-results" v-else-if="noResults">
+      No results found.
+    </div>
+  </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
 import LoginForm from './components/LoginForm.vue';
+import AddUserForm from './components/AddUserForm.vue';
 
 const isAuthenticated = ref(false);
 const searchQuery = ref('');
-const searchResult = ref();
+const searchResults = ref([]);
 const noResults = ref(false);
+const showAddUserForm = ref(false);
 
 onMounted(() => {
   const jwt = localStorage.getItem('jwt');
@@ -71,7 +72,7 @@ const handleLogout = () => {
 
 const handleSearch = async () => {
   if (searchQuery.value.trim() === '') {
-    searchResult.value = '';
+    searchResults.value = [];
     noResults.value = false;
     return;
   }
@@ -89,17 +90,21 @@ const handleSearch = async () => {
         'Content-Type': 'application/json'
       }
     });
+    if (response.status === 401) {
+      handleLogout();
+      return;
+    }
     if (response.status === 404) {
-      searchResults.value = '';
+      searchResults.value = [];
       noResults.value = true;
     } else {
       const data = await response.json();
-      searchResult.value = data; // Assuming the API returns an array of results
-      noResults.value = false;
+      searchResults.value = data; // Assuming the API returns an array of users
+      noResults.value = data.length === 0;
     }
   } catch (error) {
     console.error('Error fetching search results:', error);
-    searchResult.value = '';
+    searchResults.value = [];
     noResults.value = true;
   }
 };
