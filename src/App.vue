@@ -31,6 +31,7 @@
             <th>Username</th>
             <th>Email</th>
             <th>Full Name</th>
+            <th>Action</th> <!-- Added Action column -->
           </tr>
         </thead>
         <tbody>
@@ -38,6 +39,10 @@
             <td>{{ user.username }}</td>
             <td>{{ user.email }}</td>
             <td>{{ user.first_name }} {{ user.last_name }}</td>
+            <td>
+              <i class="fas fa-edit" @click="editUser(user)"></i>
+              <i class="fas fa-trash" @click="deleteUser(user)"></i>
+            </td> <!-- Added icons for edit and delete -->
           </tr>
         </tbody>
       </table>
@@ -106,6 +111,45 @@ const handleSearch = async () => {
     console.error('Error fetching search results:', error);
     searchResults.value = [];
     noResults.value = true;
+  }
+};
+
+const editUser = (user) => {
+  // Implement edit user functionality
+  console.log('Edit user:', user);
+};
+
+const deleteUser = async (user) => {
+  const confirmed = confirm(`Are you sure you want to delete user ${user.username}?`);
+  if (!confirmed) {
+    return;
+  }
+
+  const jwt = localStorage.getItem('jwt');
+  if (!jwt) {
+    handleLogout();
+    return;
+  }
+
+  try {
+    const response = await fetch(`http://127.0.0.1:8000/users/${user.username}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${jwt}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    if (response.status === 401) {
+      handleLogout();
+      return;
+    }
+    if (response.ok) {
+      searchResults.value = searchResults.value.filter(u => u.username !== user.username);
+    } else {
+      console.error('Failed to delete user:', response.statusText);
+    }
+  } catch (error) {
+    console.error('Error deleting user:', error);
   }
 };
 </script>
@@ -208,6 +252,15 @@ th, td {
 
 th {
   background-color: #f2f2f2;
+}
+
+td i {
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+td i:hover {
+  color: #007bff;
 }
 
 .no-results {
