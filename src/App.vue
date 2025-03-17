@@ -24,6 +24,7 @@
       </div>
     </div>
     <AddUserForm v-if="showAddUserForm" @close="showAddUserForm = false" />
+    <ModifyUserForm v-if="showModifyUserForm" :user="selectedUser" @close="showModifyUserForm = false" @update="handleUserUpdate" />
     <div class="search-results" v-if="searchResults.length > 0">
       <table>
         <thead>
@@ -57,12 +58,15 @@
 import { ref, onMounted } from 'vue';
 import LoginForm from './components/LoginForm.vue';
 import AddUserForm from './components/AddUserForm.vue';
+import ModifyUserForm from './components/ModifyUserForm.vue';
 
 const isAuthenticated = ref(false);
 const searchQuery = ref('');
 const searchResults = ref([]);
 const noResults = ref(false);
 const showAddUserForm = ref(false);
+const showModifyUserForm = ref(false);
+const selectedUser = ref(null);
 
 onMounted(() => {
   const jwt = localStorage.getItem('jwt');
@@ -115,8 +119,15 @@ const handleSearch = async () => {
 };
 
 const editUser = (user) => {
-  // Implement edit user functionality
-  console.log('Edit user:', user);
+  selectedUser.value = user;
+  showModifyUserForm.value = true;
+};
+
+const handleUserUpdate = (updatedUser) => {
+  const index = searchResults.value.findIndex(u => u.username === updatedUser.username);
+  if (index !== -1) {
+    searchResults.value[index] = updatedUser;
+  }
 };
 
 const deleteUser = async (user) => {
