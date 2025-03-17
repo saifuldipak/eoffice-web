@@ -31,6 +31,19 @@
             <option value="user_admin">User Admin</option>
           </select>
         </div>
+        <div>
+          <label for="is_active">Active Status:</label>
+          <div class="radio-group">
+            <div class="radio-item">
+              <input type="radio" id="active" value="true" v-model="user.is_active" />
+              <label for="active">Active</label>
+            </div>
+            <div class="radio-item">
+              <input type="radio" id="inactive" value="false" v-model="user.is_active" />
+              <label for="inactive">Inactive</label>
+            </div>
+          </div>
+        </div>
         <button type="submit">Save</button>
         <button type="button" @click="$emit('close')">Cancel</button>
       </form>
@@ -158,5 +171,20 @@ const handleSubmit = async () => {
 .modify-user-form button[type="button"] {
   background-color: #dc3545;
   color: white;
+}
+
+.radio-group {
+  display: flex;
+  align-items: center;
+}
+
+.radio-item {
+  display: flex;
+  align-items: center;
+  margin-right: 15px;
+}
+
+.radio-item input[type="radio"] {
+  margin-right: 5px;
 }
 </style>
