@@ -95,7 +95,7 @@ const handleSearch = async () => {
   }
 
   try {
-    const response = await fetch(`http://127.0.0.1:8000/users/${searchQuery.value}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/users/${searchQuery.value}`, {
       headers: {
         'Authorization': `Bearer ${jwt}`,
         'Content-Type': 'application/json'
