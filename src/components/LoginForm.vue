@@ -12,6 +12,8 @@
       </div>
       <button type="submit">Login</button>
     </form>
+    <!-- Error message display -->
+    <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
   </div>
 </template>
 
@@ -20,8 +22,10 @@ import { ref } from 'vue';
 
 const username = ref('');
 const password = ref('');
+const errorMessage = ref(''); // Reactive variable for error message
 
 const handleLogin = async () => {
+  errorMessage.value = ''; // Clear any previous error message
   try {
     const response = await fetch('http://127.0.0.1:8000/auth/token', {
       method: 'POST',
@@ -35,15 +39,17 @@ const handleLogin = async () => {
     });
 
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+      const errorResponse = await response.json(); // Parse JSON response
+      throw new Error(errorResponse.detail || 'An error occurred'); // Extract "detail" or use a fallback message
     }
 
     const data = await response.json();
-    const jwt = data.access_token; // Assuming the token is in the 'token' field
+    const jwt = data.access_token; // Assuming the token is in the 'access_token' field
     localStorage.setItem('jwt', jwt);
     window.location.reload();
   } catch (error) {
     console.error('There was a problem with the login request:', error);
+    errorMessage.value = error.message; // Set the extracted error message
   }
 };
 </script>
@@ -89,5 +95,11 @@ const handleLogin = async () => {
 
 .login-form button:hover {
   opacity: 0.8;
+}
+
+.error-message {
+  color: red;
+  margin-top: 10px;
+  text-align: center;
 }
 </style>
