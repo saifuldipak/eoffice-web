@@ -61,12 +61,12 @@ const handleSubmit = async () => {
     email: email.value,
     first_name: firstName.value,
     last_name: lastName.value,
-    role: role.value, // Include role in the newUser object
-    password: password.value, // Include password in the newUser object
+    role: role.value,
+    password: password.value,
   };
 
   try {
-    const response = await fetch('http://127.0.0.1:8000/users/', {
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/users/`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${jwt}`,
@@ -77,12 +77,11 @@ const handleSubmit = async () => {
 
     if (response.ok) {
       alert('User added successfully');
-      // Clear the form
       username.value = '';
       email.value = '';
       firstName.value = '';
       lastName.value = '';
-      role.value = ''; // Reset to default role
+      role.value = '';
       password.value = '';
       emit('close');
     } else {

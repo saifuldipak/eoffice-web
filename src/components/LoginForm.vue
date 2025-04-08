@@ -27,7 +27,7 @@ const errorMessage = ref(''); // Reactive variable for error message
 const handleLogin = async () => {
   errorMessage.value = ''; // Clear any previous error message
   try {
-    const response = await fetch('http://127.0.0.1:8000/auth/token', {
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/auth/token`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',

@@ -83,7 +83,7 @@ const handleSubmit = async () => {
   }
 
   try {
-    const response = await fetch(`http://127.0.0.1:8000/users/${user.value.username}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/users/${user.value.username}`, {
       method: 'PATCH',
       headers: {
         'Authorization': `Bearer ${jwt}`,
